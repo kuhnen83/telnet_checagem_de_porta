@@ -1,0 +1,30 @@
+
+Abaixo segue script pra validar as portas via telnet.
+80, 443 ou a porta que necessitar, altere conforme sua necessidade.
+
+nome do arquivo: "sugestao" telnet.sh                                                  
+#!/bin/bash
+
+# Solicita ao usuário que digite o endereço IP
+read -p "Digite o endereço IP que deseja verificar: " ip
+
+# Verifica se o endereço IP é válido
+if ! [[ "$ip" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Endereço IP inválido."
+    exit 1
+fi
+
+# Portas que você deseja verificar
+portas=(80 443)  # Exemplo de portas a verificar: HTTP, HTTPS, SSH
+
+# Loop para verificar cada porta
+for porta in "${portas[@]}"; do
+    nc -zvw 1 "$ip" "$porta" 2>&1 | grep succeeded > /dev/null
+    if [ $? -eq 0 ]; then
+        echo "Porta $porta está aberta em $ip"
+    else
+        echo "Porta $porta está fechada em $ip"
+    fi
+done
+
+exit 0
